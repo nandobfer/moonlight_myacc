@@ -1,0 +1,2 @@
+[Mon, 21 Feb 2022 00:36:26 -0300] [OTS_MonstersList.php] Fatal error: Cannot load monsters.xml. File does not exist. (/home/nando_tibiabr/canary_server/data/monster/monsters.xml). Error: 
+[Mon, 21 Feb 2022 00:36:26 -0300] [OTS_SpellsList.php] Fatal error: Cannot load spells.xml. File does not exist. (/home/nando_tibiabr/canary_server/data/spells/spells.xml). Error: 
