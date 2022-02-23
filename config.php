@@ -47,7 +47,7 @@ $config = array(
 	// gesior backward support (templates & pages)
 	// allows using gesior templates and pages with myaac
 	// might bring some performance when disabled
-	'backward_support' => true,
+	'backward_support' => false,
 
 	// head options (html)
 	'meta_description' => 'Tibia is a free massive multiplayer online role playing game (MMORPG).', // description of the site
