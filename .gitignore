@@ -1,5 +1,5 @@
 config.local.php
-/system/cache/*
+system/cache/*
 /system/php_sessions/*
 system/cache/myaac_ukzv9hva_00c88ccff0884ae66c6d60b8211df552a8d95192
 system/cache/myaac_ukzv9hva_04ec9a4d2ad304dd8567cd64eb3c82d57e6a42fc
