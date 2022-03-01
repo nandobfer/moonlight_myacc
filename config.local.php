@@ -3,7 +3,7 @@
 $config['installed'] = true;
 $config['env'] = 'prod'; // dev or prod
 $config['mail_enabled'] = true;
-$config['server_path'] = '/home/nando_tibiabr/canary_server/';
+$config['server_path'] = '/home/nando_tibiabr/moonlight/';
 $config['mail_admin'] = 'nandobfer@yahoo.com.br';
 $config['mail_address'] = 'nandobfer@yahoo.com.br';
 $config['date_timezone'] = 'America/Bahia';

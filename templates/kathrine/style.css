@@ -24,7 +24,10 @@ body
 	width: 780px;
 	height: 245px;
 	background: url('images/logo.png') no-repeat;
+	background-position: center top;
+	background-size: contain;
 	float: left;
+	margin: 10px;
 }
 
 #tabs
