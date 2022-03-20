@@ -29,7 +29,7 @@
 			page = page ? page : 0;
 			const pageStr = page > 0 ? `page=${page}` : ''
 
-			fetch(`https://api.github.com/repos/nandobfer/canary_server/commits?${page}`)
+			fetch(`https://api.github.com/repos/nandobfer/canary_server/commits?${pageStr}`)
 				.then(response => response.json())
 				.then(rawData => {
 					if (!rawData.length) {
@@ -48,6 +48,7 @@
 						})
 					}
 
+					$btnLoadMore.removeAttr('disabled');
 					fillTable(data, page);
 				})
 		}
@@ -70,7 +71,13 @@
 				i++;
 			}
 
-			$btnLoadMore.off('click').on('click', () => fetchCommits(page + 1))
+			$btnLoadMore
+				.off('click')
+				.on('click', function () {
+					$btnLoadMore.attr('disabled', 'disabled');
+					page++;
+					fetchCommits(page);
+				});
 			$('#btnLoadMoreContainer').html($btnLoadMore);
 		}
 
