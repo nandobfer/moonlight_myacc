@@ -48,6 +48,7 @@
 						})
 					}
 
+					$btnLoadMore.removeAttr('disabled');
 					fillTable(data, page);
 				})
 		}
@@ -70,7 +71,13 @@
 				i++;
 			}
 
-			$btnLoadMore.off('click').on('click', () => fetchCommits(page + 1))
+			$btnLoadMore
+				.off('click')
+				.on('click', function () {
+					$btnLoadMore.attr('disabled', 'disabled');
+					page++;
+					fetchCommits(page);
+				});
 			$('#btnLoadMoreContainer').html($btnLoadMore);
 		}
 
