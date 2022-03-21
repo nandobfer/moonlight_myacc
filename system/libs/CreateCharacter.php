@@ -14,12 +14,11 @@ class CreateCharacter
 	/**
 	 * @param string $name
 	 * @param int $sex
-	 * @param int $vocation
-	 * @param int $town
+	 * @param int $race
 	 * @param array $errors
 	 * @return bool
 	 */
-	public function check($name, $sex, &$vocation, &$town, &$errors) {
+	public function check($name, $sex, &$race, &$errors) {
 		$minLength = config('character_name_min_length');
 		$maxLength = config('character_name_max_length');
 
@@ -38,38 +37,28 @@ class CreateCharacter
 		if(empty($sex) && $sex != "0")
 			$errors['sex'] = 'Please select the sex for your character!';
 
-		if(count(config('character_samples')) > 1)
+		if(count(config('character_races')) > 1)
 		{
-			if(!isset($vocation))
-				$errors['vocation'] = 'Please select a vocation for your character.';
+			if(!isset($race))
+				$errors['race'] = 'Please select a race for your character.';
 		}
 		else
-			$vocation = config('character_samples')[0];
-
-		if(count(config('character_towns')) > 1) {
-			if(!isset($town))
-				$errors['town'] = 'Please select a town for your character.';
-		}
-		else {
-			$town = config('character_towns')[0];
-		}
+			$race = config('character_races')[0];
 
 		if(empty($errors)) {
 			if(!isset(config('genders')[$sex]))
 				$errors['sex'] = 'Sex is invalid.';
-			if(!in_array($town, config('character_towns'), false))
-				$errors['town'] = 'Please select valid town.';
-			if(count(config('character_samples')) > 1)
+			if(count(config('character_races')) > 1)
 			{
-				$newchar_vocation_check = false;
-				foreach((array)config('character_samples') as $char_vocation_key => $sample_char)
-					if($vocation === $char_vocation_key)
-						$newchar_vocation_check = true;
-				if(!$newchar_vocation_check)
-					$errors['vocation'] = 'Unknown vocation. Please fill in form again.';
+				$newchar_race_check = false;
+				foreach((array)config('character_races') as $char_race_key => $sample_char)
+					if($race === $char_race_key)
+						$newchar_race_check = true;
+				if(!$newchar_race_check)
+					$errors['race'] = 'Unknown race. Please fill in form again.';
 			}
 			else
-				$vocation = 0;
+				$race = 0;
 		}
 
 		return empty($errors);
@@ -78,8 +67,7 @@ class CreateCharacter
 	/**
 	 * @param string $name
 	 * @param int $sex
-	 * @param int $vocation
-	 * @param int $town
+	 * @param int $race
 	 * @param OTS_Account $account
 	 * @param array $errors
 	 * @return bool
@@ -88,9 +76,9 @@ class CreateCharacter
 	 * @throws Twig_Error_Runtime
 	 * @throws Twig_Error_Syntax
 	 */
-	public function doCreate($name, $sex, $vocation, $town, $account, &$errors)
+	public function doCreate($name, $sex, $race, $account, &$errors)
 	{
-		if(!$this->check($name, $sex, $vocation, $town, $errors)) {
+		if(!$this->check($name, $sex, $race, $errors)) {
 			return false;
 		}
 
@@ -103,7 +91,7 @@ class CreateCharacter
 
 		if(empty($errors))
 		{
-			$char_to_copy_name = config('character_samples')[$vocation];
+			$char_to_copy_name = config('character_samples')[0];
 			$char_to_copy = new OTS_Player();
 			$char_to_copy->find($char_to_copy_name);
 			if(!$char_to_copy->isLoaded())
@@ -140,7 +128,7 @@ class CreateCharacter
 		if($db->hasColumn('players', 'lookaddons'))
 			$player->setLookAddons($char_to_copy->getLookAddons());
 
-		$player->setTownId($town);
+		$player->setTownId(config('startup_town'));
 		$player->setExperience($char_to_copy->getExperience());
 		$player->setLevel($char_to_copy->getLevel());
 		$player->setMagLevel($char_to_copy->getMagLevel());
@@ -202,6 +190,10 @@ class CreateCharacter
 		$loaded_items_to_copy = $db->query("SELECT * FROM player_items WHERE player_id = ".$char_to_copy->getId()."");
 		foreach($loaded_items_to_copy as $save_item)
 			$db->query("INSERT INTO `player_items` (`player_id` ,`pid` ,`sid` ,`itemtype`, `count`, `attributes`) VALUES ('".$player->getId()."', '".$save_item['pid']."', '".$save_item['sid']."', '".$save_item['itemtype']."', '".$save_item['count']."', '".$save_item['attributes']."');");
+
+		if($db->hasTable('player_storage') && !empty(config('race_storage_key'))) {
+			$db->query("INSERT INTO `player_storage` (`player_id`, `key`, `value`) VALUES ('" . $player->getId() . "', '" . config('race_storage_key') . "', '$race');");
+		}
 
 		global $twig;
 		$twig->display('success.html.twig', array(

@@ -2957,6 +2957,28 @@ class OTS_Player extends OTS_Row_DAO
 		return $config['vocations'][$voc];
         //return POT::getInstance()->getVocationsList()->getVocationName($this->data['vocation']);
     }
+/**
+ * Player race name.
+ *
+ * <p>
+ * Get the race value from player_storage table
+ * </p>
+ *
+ * @version 0.1.0
+ * @since 0.0.6
+ * @return string Player race name.
+ * @throws E_OTS_NotLoaded If player is not loaded or global vocations list is not loaded.
+ */
+public function getRaceName()
+{
+    if(empty(config('race_storage_key')) || !count(config('character_races')) > 0) {
+        throw new E_OTS_NotLoaded();
+    }
+
+    $race = $this->db->query('SELECT `value` FROM `player_storage` WHERE `player_id` = '.$this->getId().' AND `key` = "'.config('race_storage_key').'" LIMIT 1')->fetchObject();
+    
+    return config('character_races')[$race->value];
+}
 
 /**
  * Player residence town name.

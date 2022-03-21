@@ -196,21 +196,21 @@
 
 												{{ hook('HOOK_ACCOUNT_CREATE_AFTER_SEX') }}
 
-                                                {% if config.character_samples|length > 1 %}
+                                                {% if config.character_races|length > 1 %}
 												<tr>
 													<td class="LabelV" style="width: 150px">
-														<span{% if errors.vocation is defined %} class="red"{% endif %}>Vocation:</span>
+														<span{% if errors.race is defined %} class="red"{% endif %}>Race:</span>
 													</td>
 													<td>
 														<table width="100%" >
 															<tbody>
 															<tr>
 																<td>
-                                                           		{% for key, sample_char in config.character_samples %}
+                                                           		{% for key, race in config.character_races %}
 																	<span style="margin-right:15px;" class="OptionContainer">
-																		<input type="radio" name="vocation" id="vocation{{ key }}" value="{{ key }}"
-                                                                                {% if vocation is not null and vocation == key %} checked="checked"{% endif %}>
-																		<label for="vocation{{ key }}">{{ config['vocations'][key] }}</label>
+																		<input type="radio" name="race" id="race{{ key }}" value="{{ key }}"
+                                                                                {% if race is not null and race == key %} checked="checked"{% endif %}>
+																		<label for="race{{ key }}">{{ race|lower }}</label>
 																	</span>
                                                             	{% endfor %}
 																</td>
@@ -222,39 +222,12 @@
 												<tr>
 													<td></td>
 													<td>
-														<span id="vocation_error" class="FormFieldError">{% if errors.vocation is defined %}{{ errors.vocation }}{% endif %}</span>
+														<span id="race_error" class="FormFieldError">{% if errors.race is defined %}{{ errors.race }}{% endif %}</span>
 													</td>
 												</tr>
 												{% endif %}
 
-												{{ hook('HOOK_ACCOUNT_CREATE_AFTER_VOCATION') }}
-
-                                                {% if config.character_towns|length > 1 %}
-												<tr>
-													<td class="LabelV" style="width: 150px">
-														<span{% if errors.town is defined %} class="red"{% endif %}>Select your city:</span>
-													</td>
-													<td>
-														<table width="100%" >
-															<tbody>
-															<tr>
-																<td>
-																	{% for town_id in config.character_towns %}
-																		<span style="margin-right:15px;" class="OptionContainer">
-																			<input type="radio" name="town" id="town{{ town_id }}" value="{{ town_id }}"
-																					{% if town is not null and town == town_id %} checked="checked"{% endif %}>
-																			<label for="town{{ town_id }}">{{ config.towns[town_id] }}</label>
-																		</span>
-																	{% endfor %}
-																</td>
-															</tr>
-															</tbody>
-														</table>
-													</td>
-												</tr>
-                                                {% endif %}
-
-												{{ hook('HOOK_ACCOUNT_CREATE_AFTER_TOWNS') }}
+												{{ hook('HOOK_ACCOUNT_CREATE_AFTER_RACE') }}
 
 												</tbody>
 											</table>

@@ -136,10 +136,23 @@ $config = array(
 	'send_mail_when_change_password' => true,	// send e-mail with new password when change password to account
 	'send_mail_when_generate_reckey' => true,	// send e-mail with rec key (key is displayed on page anyway when generate)
 
+	'startup_town' => 2,
+
 	// genders (aka sex)
 	'genders' => array(
 		0 => 'Female',
 		1 => 'Male'
+	),
+
+	'race_storage_key' => '300000000',
+
+	// races
+	'character_races' => array(
+		0 => 'Human',
+		1 => 'Elf',
+		2 => 'Goblin',
+		3 => 'Orc',
+		4 => 'Dwarf',
 	),
 
 	// new character config
