@@ -1,38 +1,86 @@
 <br/>
-<table border="0" cellspacing="1" cellpadding="4" width="100%">
-	<tr bgcolor="{{ config.vdarkborder }}">
-		<td width="22"><span class="white"><b>Type</b></span></td>
-		<td width="22"><span class="white"><b>Where</b></span></td>
-		<td width="50"><span class="white"><b>Date</b></span></td>
-		<td><span class="white"><b>Description</b></span></td>
-	</tr>
-	{% if changelogs|length > 0%}
-		{% set i = 0 %}
-		{% for log in changelogs %}
-		<tr bgcolor="{{ getStyle(i) }}">
-			<td align="center">
-				<img src="images/changelog/{{ log.type }}.png" title="{{ log.type|capitalize }}"/>
-			</td>
-			<td align="center">
-				<img src="images/changelog/{{ log.where }}.png" title="{{ log.where|capitalize }}"/>
-			</td>
-			<td>{{ log.date|date("j.m.Y") }}</td>
-			<td>{{ log.body|raw }}</td>
+<table border="0" cellspacing="1" cellpadding="4" width="100%" id="changelogsTable">
+	<thead>
+		<tr bgcolor="{{ config.vdarkborder }}">
+			<td width="50"><span class="white"><b>Author</b></span></td>
+			<td width="50"><span class="white"><b>Date</b></span></td>
+			<td><span class="white"><b>Description</b></span></td>
 		</tr>
-		{% set i = i + 1 %}
-		{% endfor %}
-	{% else %}
-	<tr>
-		<td colspan="4" bgcolor="{{ config.darkborder }}">There are no changelogs for the moment.</td>
-	</tr>
-	{% endif %}
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="4" bgcolor="{{ config.darkborder }}">Please wait while we fetch the data.</td>
+		</tr>
+	<tfoot>
 
-	<table border="0" cellspacing="1" cellpadding="4" width="100%">
-	{% if page > 0 %}
-		<tr><td width="100%" align="right" valign="bottom"><a href="{{ getLink('changelog/' ~ (page - 1)) }}" class="size_xxs">Previous Page</a></td></tr>
-		{% endif %}
-		{% if next_page %}
-		<tr><td width="100%" align="right" valign="bottom"><a href="{{ getLink('changelog/' ~ (page + 1)) }}" class="size_xxs">Next Page</a></td></tr>
-	{% endif %}
-	</table>
+		<table border="0" cellspacing="1" cellpadding="4" width="100%">
+			<tr><td width="100%" align="center" valign="bottom" id="btnLoadMoreContainer">	
+			</td></tr>
+		</table>
+	<tfoot>
 </table>
+
+<script>
+	$(document).ready(function () {
+		const $table = $('#changelogsTable tbody');
+		const $btnLoadMore = $('<button id="btnLoadMore">Load more changes</button>');
+
+		function fetchCommits(page) {
+			page = page ? page : 0;
+			const pageStr = page > 0 ? `page=${page}` : ''
+
+			fetch(`https://api.github.com/repos/nandobfer/canary_server/commits?${pageStr}`)
+				.then(response => response.json())
+				.then(rawData => {
+					if (!rawData.length) {
+						$btnLoadMore.remove();
+						return;
+					}
+
+					const data = []
+
+					for ({ commit } of rawData) {
+						const { author, message } = commit;
+						data.push({
+							name: author.name,
+							date: author.date,
+							message
+						})
+					}
+
+					$btnLoadMore.removeAttr('disabled');
+					fillTable(data, page);
+				})
+		}
+
+		function fillTable(data, page) {
+			if (!data || !data.length) return;
+
+			if (page == 0) $table.html('');
+
+			var i = 0;
+			for ({ name, date, message } of data) {
+				const bgColor = i % 2 == 0 ? "{{ config.lightborder }}" : "{{ config.darkborder }}";
+				const $tr = $(`<tr bgColor="${bgColor}">`);
+				$tr.append(`
+					<td>${name}</td>
+					<td>${date}</td>
+					<td>${message}</td>
+				`);
+				$table.append($tr);
+				i++;
+			}
+
+			$btnLoadMore
+				.off('click')
+				.on('click', function () {
+					$btnLoadMore.attr('disabled', 'disabled');
+					page++;
+					fetchCommits(page);
+				});
+			$('#btnLoadMoreContainer').html($btnLoadMore);
+		}
+
+		fetchCommits();
+	})
+</script>
